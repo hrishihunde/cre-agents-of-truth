@@ -100,7 +100,6 @@ export const WorkflowCanvas = ({ curStep, openInfo }: WorkflowCanvasProps) => {
                         height={18}
                     >
                         <div
-                            xmlns="http://www.w3.org/1999/xhtml"
                             style={{
                                 font: "8.5px/1 'Geist Mono',monospace",
                                 color: col,
@@ -166,7 +165,7 @@ export const WorkflowCanvas = ({ curStep, openInfo }: WorkflowCanvasProps) => {
 
             {/* NODES */}
             {ALL_NODES.map((id) => {
-                const styleProps = {
+                const styleMap: Record<string, { left: string; top: string }> = {
                     agent: { left: "8%", top: "50%" },
                     gateway: { left: "29%", top: "26%" },
                     chain: { left: "29%", top: "74%" },
@@ -174,7 +173,8 @@ export const WorkflowCanvas = ({ curStep, openInfo }: WorkflowCanvasProps) => {
                     vault: { left: "73%", top: "24%" },
                     api: { left: "73%", top: "63%" },
                     creator: { left: "91%", top: "50%" },
-                }[id as keyof typeof styleProps];
+                };
+                const styleProps = styleMap[id];
 
                 const isCur = cStep?.cur.includes(id);
                 let wasCur = false;
@@ -187,7 +187,7 @@ export const WorkflowCanvas = ({ curStep, openInfo }: WorkflowCanvasProps) => {
                 const isDone = !isCur && wasCur;
                 const isDim = !isCur && !wasCur;
 
-                const emojis = {
+                const emojisMap: Record<string, string> = {
                     agent: "🤖",
                     gateway: "⚡",
                     chain: "🔗",
@@ -195,7 +195,8 @@ export const WorkflowCanvas = ({ curStep, openInfo }: WorkflowCanvasProps) => {
                     vault: "🔐",
                     api: "🌐",
                     creator: "💰",
-                }[id as keyof typeof emojis];
+                };
+                const emojis = emojisMap[id];
 
                 const titles: Record<string, string> = {
                     agent: "AI Agent",
