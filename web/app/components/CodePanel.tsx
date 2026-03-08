@@ -1,6 +1,6 @@
 import React from 'react';
 import { StepData } from '../types';
-import { CODE_SNIPPETS } from '../data/codeSnippets';
+import { CODE } from '../data/codeSnippets';
 
 interface CodePanelProps {
     cStep: StepData | null;
@@ -18,10 +18,8 @@ export const CodePanel = ({ cStep }: CodePanelProps) => {
                 </span>
             </div>
             <div className="flex-1 overflow-y-auto">
-                {cStep && CODE_SNIPPETS[cStep.code] ? (
-                    <div className="fi py-[6px]">
-                        {CODE_SNIPPETS[cStep.code]}
-                    </div>
+                {cStep && CODE[cStep.code] ? (
+                    <div className="fi py-[6px]" dangerouslySetInnerHTML={{ __html: CODE[cStep.code]() }} />
                 ) : (
                     <div className="p-[28px_12px] text-center text-t4 text-[10px] leading-[2.2]">
                         <div className="text-[18px] mb-[8px] opacity-30">{`{ }`}</div>

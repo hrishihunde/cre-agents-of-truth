@@ -2,8 +2,9 @@ export interface ArrowData {
     f: string;
     t: string;
     lbl: string;
-    o?: number;
-    col: 'w' | 'g' | 'd';
+    type: 'req' | 'res' | 'dim';
+    side: string;
+    arc: number;
 }
 
 export interface StepData {

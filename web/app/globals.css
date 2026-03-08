@@ -2,19 +2,22 @@
 
 @layer base {
   :root {
-    --bg: #0a0a0a;
+    --bg: #0A0A0A;
     --bg1: #111111;
-    --bg2: #191919;
-    --bg3: #222222;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
     --bg4: #2a2a2a;
-    --b0: #2e2e2e;
-    --b1: #3a3a3a;
+    --b0: #2a2a2a;
+    --b1: #333333;
     --b2: #555555;
     --t0: #ffffff;
     --t1: #cccccc;
     --t2: #888888;
     --t3: #555555;
     --t4: #333333;
+    --acc: #E8713A;
+    --acc-dim: rgba(232, 113, 58, 0.12);
+    --acc-glow: rgba(232, 113, 58, 0.4);
 
     --sw: 218px;
     --cw: 298px;
@@ -45,6 +48,7 @@
   --color-t2: var(--t2);
   --color-t3: var(--t3);
   --color-t4: var(--t4);
+  --color-acc: var(--acc);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -65,36 +69,44 @@
   .toggle-btn {
     @apply h-[26px] px-[9px] rounded-[3px] border border-b0 bg-bg text-t4 font-mono text-[10px] cursor-pointer transition-all duration-150 whitespace-nowrap tracking-[0.1px] flex items-center gap-[3px];
   }
+
   .toggle-btn:hover {
     @apply border-b2 text-t2;
   }
+
   .toggle-btn.done {
     @apply text-t3 border-b0;
   }
+
   .toggle-btn.done .tl {
     @apply line-through opacity-50;
   }
+
   .toggle-btn.cur {
-    @apply border-t0 text-t0 bg-bg2;
+    @apply border-acc text-acc bg-[var(--acc-dim)];
   }
 
   .node-box {
-    @apply bg-bg2 border border-b1 rounded-[8px] py-[10px] px-[14px] min-w-[108px] text-center transition-all duration-300 relative;
+    @apply bg-bg2 border-[1.5px] border-b1 rounded-[10px] py-[12px] px-[16px] pb-[10px] min-w-[110px] text-center transition-all duration-300 relative;
   }
+
   .node-box.cur {
-    @apply border-t0 bg-bg3;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    @apply border-acc bg-[rgba(232,113,58,0.06)];
+    box-shadow: 0 0 20px rgba(232, 113, 58, 0.15), 0 0 0 1px rgba(232, 113, 58, 0.2);
   }
+
   .node-box.done {
-    @apply border-b2;
+    @apply border-b2 bg-bg2;
   }
+
   .node-box.dim {
-    @apply opacity-20;
+    @apply opacity-15;
   }
 
   .info-btn {
     @apply absolute top-[4px] right-[4px] w-[14px] h-[14px] rounded-full border border-b1 bg-bg3 text-t3 text-[8px] italic font-semibold font-sans cursor-pointer flex items-center justify-center transition-all duration-100 z-20 leading-none;
   }
+
   .info-btn:hover {
     @apply border-t0 text-t0;
   }
@@ -102,13 +114,52 @@
   .code-line {
     @apply flex px-[11px] gap-[9px] text-[10px] leading-[1.8] font-mono hover:bg-white/[0.015];
   }
+
   .code-line.hl {
-    @apply bg-white/[0.055] border-l-[1.5px] border-l-t0;
+    @apply bg-[var(--acc-dim)] border-l-[2px] border-l-acc;
   }
+
   .code-line.hd {
-    @apply bg-white/[0.02] border-l-[1.5px] border-l-b2;
+    @apply bg-white/[0.02] border-l-[2px] border-l-b1;
   }
 }
+
+  /* HTML Match Utilities */
+  .mbody h4{color:var(--acc);font-size:10px;font-weight:700;margin:11px 0 3px;letter-spacing:.3px;text-transform:uppercase;font-family:var(--font-geist-mono)}
+  .mbody h4:first-child{margin-top:0}
+  .mbody p{margin-bottom:7px}
+  .mbody code{font-family:var(--font-geist-mono);font-size:9.5px;background:var(--bg3);padding:1px 4px;border-radius:2px;color:var(--t1);border:1px solid var(--b0)}
+  .mtag{display:inline-block;font-size:8.5px;background:var(--bg3);border:1px solid var(--b1);border-radius:2px;padding:1px 4px;margin:1px 2px;color:var(--t2);font-family:var(--font-geist-mono)}
+
+  .cl{display:flex;padding:0 11px;gap:9px;font-size:10px;line-height:1.8;font-family:var(--font-geist-mono)}
+  .cl:hover{background:rgba(255,255,255,.015)}
+  .cl.hl{background:var(--acc-dim);border-left:2px solid var(--acc)}
+  .cl.hd{background:rgba(255,255,255,.02);border-left:2px solid var(--b1)}
+  .lnum{color:var(--t4);min-width:16px;text-align:right;user-select:none;font-size:8.5px;padding-top:1px}
+  
+  .kw{color:#aaa}.fn{color:#ddd}.st{color:#999}.cm{color:#4a4a4a;font-style:italic}.nm{color:#888}.op{color:#666}
+  .hl-kw{color:var(--acc)}.hl-fn{color:var(--acc);font-weight:600}.hl-st{color:var(--acc)}
+
+  .cx{margin:10px 11px;background:var(--bg3);border:1.5px solid var(--acc);border-radius:6px;padding:10px 12px}
+  .cxt{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--acc);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+  .cxb{font-size:11.5px;color:var(--t1);line-height:1.7;font-family:var(--font-geist-sans)}
+  .cxb code{font-family:var(--font-geist-mono);font-size:10px;background:var(--bg4);padding:1px 5px;border-radius:3px;color:var(--acc);border:1px solid var(--b0)}
+
+  .tsep{width:1px;height:18px;background:var(--b0)}
+  .chip{font-size:9px;color:var(--t3);border:1px solid var(--b0);padding:2px 6px;border-radius:2px;background:var(--bg2)}
+
+  /* Sidebar matching */
+  .sbi{display:flex;align-items:center;gap:5px;padding:3px 12px;font-size:11px;color:var(--t2);cursor:pointer;border-left:2px solid transparent;transition:all .1s;user-select:none}
+  .sbi:hover{background:var(--bg2);color:var(--t1)}
+  .sbi.active{background:var(--bg3);color:var(--acc);border-left-color:var(--acc)}
+  .sbi.i1{padding-left:20px}
+  .sbi.i2{padding-left:30px}
+  .slbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sbadge{font-size:8px;padding:1px 4px;border-radius:2px;border:1px solid var(--b0);color:var(--t4);background:var(--bg3)}
+  .sc{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;transition:all .25s}
+  .sc.done{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+  .sc.cur{border-color:var(--acc)}
+  .sdiv{height:1px;background:var(--b0);margin:5px 0}
 
 @keyframes dash {
   to {
@@ -121,9 +172,19 @@
     opacity: 0;
     transform: translateY(3px);
   }
+
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes pulseOrange {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--acc-glow);
+  }
+  50% {
+    box-shadow: 0 0 8px 3px var(--acc-glow);
   }
 }
 
@@ -135,9 +196,11 @@
   width: 3px;
   height: 3px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--b0);
   border-radius: 2px;

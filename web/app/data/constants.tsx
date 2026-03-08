@@ -1,8 +1,9 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import { StepData, ModalData } from '../types';
 
 export const MODALS: Record<string, ModalData> = {
-    agent: {
+    ag: {
         title: "🤖  AI Agent — Consumer",
         body: (
             <>
@@ -22,7 +23,7 @@ export const MODALS: Record<string, ModalData> = {
             </>
         )
     },
-    gateway: {
+    sk: {
         title: "⚡  x402 Gateway — Payment Verifier",
         body: (
             <>
@@ -44,7 +45,7 @@ export const MODALS: Record<string, ModalData> = {
             </>
         )
     },
-    chain: {
+    bc: {
         title: "🔗  Base Sepolia — L2 Settlement Layer",
         body: (
             <>
@@ -66,7 +67,7 @@ export const MODALS: Record<string, ModalData> = {
             </>
         )
     },
-    cre: {
+    cr: {
         title: "⚙️  CRE Workflow — Decentralised Execution",
         body: (
             <>
@@ -88,14 +89,14 @@ export const MODALS: Record<string, ModalData> = {
             </>
         )
     },
-    vault: {
+    vd: {
         title: "🔐  Vault DON — Threshold Encryption",
         body: (
             <>
                 <h4 className="text-t0 text-[10px] font-bold mb-[3px] tracking-[0.3px] uppercase font-mono">Role</h4>
                 <p className="mb-[7px]">A separate decentralised network that stores and retrieves encrypted secrets at runtime. Uses Chainlink's DKG (Distributed Key Generation) for threshold encryption — the privacy core of the project.</p>
                 <h4 className="text-t0 text-[10px] font-bold my-[11px] mb-[3px] tracking-[0.3px] uppercase font-mono">How getSecret() works</h4>
-                <p className="mb-[7px]">When the workflow calls <code className="font-mono text-[9.5px] bg-bg3 p-[1px_4px] rounded-[2px] text-t1 border border-b0">runtime.getSecret({'{'} id: 'CREATOR_API_KEY' {'}'})</code>, each Vault node supplies a <strong>partial decryption share</strong>. The CRE reassembles the plaintext only after a quorum of shares is collected.</p>
+                <p className="mb-[7px]">When the workflow calls <code className="font-mono text-[9.5px] bg-bg3 p-[1px_4px] rounded-[2px] text-t1 border border-b0">runtime.getSecret({`{`} id: 'CREATOR_API_KEY' {`}`})</code>, each Vault node supplies a <strong>partial decryption share</strong>. The CRE reassembles the plaintext only after a quorum of shares is collected.</p>
                 <h4 className="text-t0 text-[10px] font-bold my-[11px] mb-[3px] tracking-[0.3px] uppercase font-mono">Why it's private</h4>
                 <p className="mb-[7px]">No single Vault node holds the complete key. Even if one node is compromised, an attacker gets only an unusable partial share. The key is assembled in memory, used once, never logged, never on-chain.</p>
                 <h4 className="text-t0 text-[10px] font-bold my-[11px] mb-[3px] tracking-[0.3px] uppercase font-mono">Creator trust model</h4>
@@ -110,7 +111,7 @@ export const MODALS: Record<string, ModalData> = {
             </>
         )
     },
-    api: {
+    ea: {
         title: "🌐  Skill API — Creator Endpoint",
         body: (
             <>
@@ -129,7 +130,7 @@ export const MODALS: Record<string, ModalData> = {
             </>
         )
     },
-    creator: {
+    fa: {
         title: "💰  Creator — Skill Owner",
         body: (
             <>
@@ -153,7 +154,7 @@ export const MODALS: Record<string, ModalData> = {
     }
 };
 
-export const ALL_NODES = ["agent", "gateway", "chain", "cre", "vault", "api", "creator"];
+export const ALL_NODES = ['ag', 'sk', 'fa', 'bc', 'cr', 'vd', 'ea'];
 export const TOGGLE_LABELS = [
     "x402 Pay",
     "Trigger",
@@ -172,12 +173,10 @@ export const STEPS: Record<number, StepData> = {
             "STEP 1 — AGENT PAYS VIA x402",
             "AI Agent calls the skill, receives 402, pays 0.001 USDC on Base Sepolia — confirmed in ~2 seconds.",
         ],
-        cur: ["agent", "gateway", "chain"],
+        cur: ["ag", "sk"],
         arrows: [
-            { f: "agent", t: "gateway", lbl: "POST /v1/skill/analyze", o: -9, col: "w" },
-            { f: "gateway", t: "agent", lbl: "402 Payment Required", o: 9, col: "g" },
-            { f: "agent", t: "chain", lbl: "0.001 USDC payment", o: 0, col: "w" },
-            { f: "chain", t: "gateway", lbl: "confirmed on-chain", o: 0, col: "g" },
+            { f: "ag", t: "sk", lbl: "POST /v1/skill/analyze", type: "req", side: "top", arc: 36 },
+            { f: "sk", t: "ag", lbl: "HTTP 402 Payment Required", type: "res", side: "bottom", arc: 36 },
         ],
         code: "s1",
     },
@@ -188,72 +187,83 @@ export const STEPS: Record<number, StepData> = {
             "STEP 2 — GATEWAY FIRES CRE TRIGGER",
             "Payment verified. Gateway signs a JWT and POSTs it to the CRE HTTP trigger endpoint to start the workflow.",
         ],
-        cur: ["gateway", "cre"],
-        arrows: [{ f: "gateway", t: "cre", lbl: "JWT-signed trigger", o: 0, col: "w" }],
+        cur: ["sk", "fa", "bc"],
+        arrows: [
+            { f: "ag", t: "sk", lbl: "POST + X-PAYMENT", type: "req", side: "top", arc: 36 },
+            { f: "sk", t: "fa", lbl: "POST /verify", type: "req", side: "top", arc: 36 },
+            { f: "fa", t: "bc", lbl: "POST /submitTx USDC", type: "req", side: "top", arc: 36 },
+            { f: "bc", t: "fa", lbl: "HTTP 200 tx confirmed", type: "res", side: "bottom", arc: 36 },
+            { f: "fa", t: "sk", lbl: "HTTP 200 verified ✓", type: "res", side: "bottom", arc: 36 },
+        ],
         code: "s2",
     },
     3: {
-        file: "handler.ts",
-        lang: "TS",
+        file: "handler.go",
+        lang: "Go",
         sub: [
             "STEP 3 — CRE WORKFLOW RECEIVES REQUEST",
             "All DON nodes begin executing the handler in parallel. BFT consensus will validate every step output.",
         ],
-        cur: ["cre"],
-        arrows: [{ f: "gateway", t: "cre", lbl: "trigger received", o: 0, col: "w" }],
+        cur: ["cr"],
+        arrows: [
+            { f: "sk", t: "cr", lbl: "POST /cre/trigger · JWT", type: "req", side: "bottom-top", arc: 0 },
+        ],
         code: "s3",
     },
     4: {
-        file: "vault-secret.ts",
-        lang: "TS",
+        file: "vault-don.sol",
+        lang: "Solidity",
         sub: [
             "STEP 4 — getSecret() — VAULT RETRIEVES KEY ★",
             "Creator's API key assembled from threshold-encrypted shares. No single node holds the complete key.",
         ],
-        cur: ["cre", "vault"],
+        cur: ["vd"],
         arrows: [
-            { f: "cre", t: "vault", lbl: "getSecret(CREATOR_API_KEY)", o: -9, col: "w" },
-            { f: "vault", t: "cre", lbl: "partial key shares", o: 9, col: "g" },
+            { f: "cr", t: "vd", lbl: "POST /getSecret · threshold", type: "req", side: "top", arc: 30 },
+            { f: "vd", t: "cr", lbl: "HTTP 200 · decrypted key", type: "res", side: "bottom", arc: 30 },
         ],
         code: "s4",
     },
     5: {
-        file: "confidential-http.ts",
-        lang: "TS",
+        file: "conf-http.go",
+        lang: "Go",
         sub: [
             "STEP 5 — CONFIDENTIAL HTTP CALL EXECUTES",
             "CRE calls the Skill API with the creator's key injected. Key never logged, never on-chain, never visible to the agent.",
         ],
-        cur: ["cre", "api"],
+        cur: ["cr", "ea"],
         arrows: [
-            { f: "cre", t: "api", lbl: "Bearer ${apiKey} [hidden]", o: -9, col: "w" },
-            { f: "api", t: "cre", lbl: "200 OK { result }", o: 9, col: "g" },
+            { f: "cr", t: "ea", lbl: "POST /api/analyze · Conf. HTTP", type: "req", side: "bottom", arc: 50 },
+            { f: "ea", t: "cr", lbl: "HTTP 200 · API response", type: "res", side: "top", arc: 50 },
         ],
         code: "s5",
     },
     6: {
-        file: "evm-write.ts",
-        lang: "TS",
+        file: "response.go",
+        lang: "Go",
         sub: [
             "STEP 6 — RESULT WRITTEN ON-CHAIN & RETURNED",
             "DON submits multi-signed report via Keystone Forwarder. Verified result delivered to the agent.",
         ],
-        cur: ["cre", "chain", "agent"],
+        cur: ["cr", "sk"],
         arrows: [
-            { f: "cre", t: "chain", lbl: "onReport() via Forwarder", o: -8, col: "w" },
-            { f: "chain", t: "agent", lbl: "verified result", o: 8, col: "g" },
+            { f: "cr", t: "sk", lbl: "HTTP 200 · workflow result", type: "req", side: "top-bottom", arc: 0 },
+            { f: "sk", t: "ag", lbl: "HTTP 200 · final response", type: "res", side: "bottom", arc: 36 },
         ],
         code: "s6",
     },
     7: {
-        file: "creator-wallet.ts",
-        lang: "SOLIDITY",
+        file: "settle.ts",
+        lang: "TypeScript",
         sub: [
             "STEP 7 — CREATOR RECEIVES USDC ✓",
             "0.001 USDC transferred to creator's wallet. Atomic. Per-call. No platform cut. No subscription.",
         ],
-        cur: ["chain", "creator"],
-        arrows: [{ f: "chain", t: "creator", lbl: "+ 0.001 USDC", o: 0, col: "w" }],
+        cur: ["bc"],
+        arrows: [
+            { f: "fa", t: "bc", lbl: "GET /tx/status", type: "req", side: "top", arc: 36 },
+            { f: "bc", t: "fa", lbl: "HTTP 200 · 0.001 USDC settled", type: "res", side: "bottom", arc: 36 },
+        ],
         code: "s7",
     },
 };

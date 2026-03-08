@@ -1,0 +1,25 @@
+[0m[0m
+[0m[4mC:\Users\hodl\cre-agents-of-truth\web\app\components\WorkflowCanvas.tsx[24m[0m
+[0m    [2m9:43[22m  [33mwarning[39m  'openInfo' is defined but never used                                                                             [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m12:42[22m  [31merror[39m    Unexpected any. Specify a different type                                                                         [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m19:8[22m   [33mwarning[39m  React Hook useEffect has a missing dependency: 'renderArrows'. Either include it or remove the dependency array  [2mreact-hooks/exhaustive-deps[22m[0m
+[0m   [2m89:26[22m  [31merror[39m    Unexpected any. Specify a different type                                                                         [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m94:45[22m  [31merror[39m    Unexpected any. Specify a different type                                                                         [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m100:30[22m  [31merror[39m    Unexpected any. Specify a different type                                                                         [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m116:11[22m  [33mwarning[39m  'isDim' is assigned a value but never used                                                                       [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\hodl\cre-agents-of-truth\web\app\data\constants.tsx[24m[0m
+[0m   [2m14:156[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m   [2m54:191[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m   [2m58:90[22m   [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m   [2m96:144[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m   [2m98:192[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m   [2m98:208[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m   [2m99:125[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m102:204[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m118:52[22m   [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m120:147[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m141:196[22m  [31merror[39m  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m[0m
+[0m[31m[1m✖ 18 problems (15 errors, 3 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

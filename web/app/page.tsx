@@ -30,8 +30,8 @@ export default function Home() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [modalOpen]);
 
-  const openInfo = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const openInfo = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setActiveModal(id);
     setModalOpen(true);
   };
@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div className="app-grid w-full h-full">
       <Topbar />
-      <Sidebar curStep={curStep} setCurStep={setCurStep} />
+      <Sidebar curStep={curStep} setCurStep={setCurStep} openReadme={() => openInfo('readme')} />
 
       {/* ── CENTER ── */}
       <div className="bg-bg flex flex-col overflow-hidden relative col-start-2">
