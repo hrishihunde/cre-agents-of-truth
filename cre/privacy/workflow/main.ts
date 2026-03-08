@@ -1,138 +1,105 @@
-import { HTTPCapability, ConfidentialHTTPClient, handler, type Runtime, type HTTPPayload, Runner, decodeJson } from "@chainlink/cre-sdk";
+import {
+  ConfidentialHTTPClient,
+  decodeJson,
+  handler,
+  HTTPCapability,
+  Runner,
+  type HTTPPayload,
+  type Runtime,
+} from "@chainlink/cre-sdk";
 import { z } from "zod";
 
-const PayloadSchema = z.object({
-  service_target: z.string().startsWith("http", "Must be a valid HTTP/HTTPS URL"),
-  method: z.string().default("POST"),
-  queryParameters: z.record(z.string(), z.any()).optional().default({}),
-  paymentPayload: z.string().min(1, "Payment payload cannot be empty"),
+const x402RequestSchema = z.object({
+  resource_url: z.string().url(),
+  method: z.enum(["GET", "POST", "PUT", "DELETE"]).default("GET"),
+  parameters: z.record(z.string(), z.any()).optional().default({}),
+  payment_proof: z.string().min(1),
+  secret_id: z.string().optional(),
 });
 
-type Payload = z.infer<typeof PayloadSchema>;
-
 type Config = {
-  facilitatorUrl?: string; // e.g. "https://api.x402.example.com/verify"
+  facilitator_verify_url: string;
 };
 
-type ResponsePayload = {
+type x402Response = {
   status: "success" | "error";
   message: string;
-  errors?: any;
   statusCode?: number;
   data?: any;
 };
 
-const onHttpTrigger = (runtime: Runtime<Config>, httpPayload: HTTPPayload): ResponsePayload => {
-  // Decode the generic HTTP payload
+const onHttpTrigger = (runtime: Runtime<Config>, httpPayload: HTTPPayload): x402Response => {
   let requestData: unknown;
   try {
-    requestData = decodeJson(httpPayload.input);
-    runtime.log(`Raw requestData: ${JSON.stringify(requestData)}`);
+    requestData = typeof httpPayload.input === "object" ? httpPayload.input : decodeJson(httpPayload.input);
   } catch (err: any) {
-    runtime.log(`Failed to parse input JSON: ${err.message}`);
-    return { status: "error", message: "Invalid JSON format" };
+    return { status: "error", message: "Invalid payload format" };
   }
 
-  // Validate using Zod schema
-  const parsed = PayloadSchema.safeParse(requestData);
-
+  const parsed = x402RequestSchema.safeParse(requestData);
   if (!parsed.success) {
-    runtime.log(`Invalid payload. Errors: ${JSON.stringify(parsed.error.errors)}`);
-    return {
-      status: "error",
-      message: "Invalid payload schema",
-      errors: parsed.error.errors,
-    };
+    return { status: "error", message: "Invalid x402 request parameters" };
   }
 
-  const payload = parsed.data;
-  runtime.log(`Received ${payload.method} request for ${payload.service_target} with payment payload: ${payload.paymentPayload.substring(0, 10)}...`);
-
-  // --- Payment Verification Logic ---
-  const facilitatorUrl = runtime.config.facilitatorUrl || "https://echo.free.beeceptor.com/verify";
-  runtime.log(`Verifying payment payload with x402 facilitator at ${facilitatorUrl}...`);
-
+  const req = parsed.data;
   const confidentialClient = new ConfidentialHTTPClient();
 
-  // Use ConfidentialHTTPClient for verification (executes in DON mode easily)
-  const verifyResFn = confidentialClient.sendRequest(runtime, {
+  const verifyRes = confidentialClient.sendRequest(runtime, {
     vaultDonSecrets: [],
     request: {
-      url: facilitatorUrl,
+      url: runtime.config.facilitator_verify_url,
       method: "POST",
-      multiHeaders: {
-        "Content-Type": { values: ["application/json"] }
-      },
-      bodyString: JSON.stringify({ paymentPayload: payload.paymentPayload }),
+      multiHeaders: { "Content-Type": { values: ["application/json"] } },
+      bodyString: JSON.stringify({ paymentProof: req.payment_proof }),
       encryptOutput: false
     }
-  });
-
-  const verifyRes = verifyResFn.result();
+  }).result();
 
   if (verifyRes.statusCode !== 200) {
-    runtime.log("Payment verification failed.");
-    return {
-      status: "error",
-      message: "Payment verification failed"
-    };
+    return { status: "error", message: "x402 Proof Verification Failed", statusCode: verifyRes.statusCode };
   }
 
-  runtime.log("Payment verified securely.");
+  const secrets = req.secret_id ? [{ key: req.secret_id, version: 1 }] : [];
+  const headers: Record<string, { values: string[] }> = {
+    "Content-Type": { values: ["application/json"] },
+    "X-X402-Payment-Proof": { values: [req.payment_proof] }
+  };
+  if (req.secret_id) {
+    headers["Authorization"] = { values: [`Bearer {{.${req.secret_id}}}`] };
+  }
 
-  // --- Confidential Execution ---
-  runtime.log(`Executing confidential request to ${payload.service_target}...`);
-
-  const serviceResFn = confidentialClient.sendRequest(runtime, {
-    vaultDonSecrets: [],
+  const serviceRes = confidentialClient.sendRequest(runtime, {
+    vaultDonSecrets: secrets,
     request: {
-      url: payload.service_target,
-      method: payload.method,
-      multiHeaders: {
-        "Content-Type": { values: ["application/json"] }
-      },
-      bodyString: JSON.stringify(payload.queryParameters),
-      encryptOutput: false
+      url: req.resource_url,
+      method: req.method,
+      multiHeaders: headers,
+      bodyString: req.method !== "GET" ? JSON.stringify(req.parameters) : "",
+      encryptOutput: true
     }
-  });
-
-  const serviceRes = serviceResFn.result();
+  }).result();
 
   if (serviceRes.statusCode >= 400) {
-    runtime.log(`Confidential service failed with status ${serviceRes.statusCode}`);
-    return {
-      status: "error",
-      message: "Confidential execution failed",
-      statusCode: serviceRes.statusCode
-    };
+    return { status: "error", message: "Resource Execution Failed", statusCode: serviceRes.statusCode };
   }
 
-  runtime.log("Confidential request executed successfully.");
-
-  let responseBody: unknown = "";
+  let responseBody: any;
   try {
     responseBody = decodeJson(serviceRes.body);
   } catch {
-    // Body is not JSON, returning raw representation might be limited, but we return empty for safety
-    responseBody = "Success (Non-JSON)";
+    responseBody = new TextDecoder().decode(serviceRes.body);
   }
 
   return {
     status: "success",
-    message: "Trigger executed successfully",
+    message: "Resource Executed Successfully",
     data: responseBody
   };
 };
 
 const initWorkflow = (config: Config) => {
   const http = new HTTPCapability();
-
-  return [
-    handler(
-      http.trigger({}),
-      onHttpTrigger
-    ),
-  ];
+  return [handler(http.trigger({}), onHttpTrigger)];
 };
 
 export async function main() {

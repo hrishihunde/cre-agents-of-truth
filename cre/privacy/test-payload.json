@@ -1,0 +1,6 @@
+{
+  "resource_url": "https://example.com",
+  "method": "GET",
+  "parameters": {},
+  "payment_proof": "mock_proof_123"
+}
